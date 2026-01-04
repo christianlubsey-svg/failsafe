@@ -7,3 +7,126 @@
     @apply bg-slate-50 text-slate-900 antialiased;
   }
 }
+
+/* PDF-specific styles */
+.pdf-container {
+  width: 794px; /* A4 width at 96 DPI */
+  background: white;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #1e293b;
+  padding: 40px;
+}
+
+.pdf-title-page {
+  min-height: 1000px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px 40px;
+}
+
+.pdf-part-section {
+  margin-bottom: 32px;
+  page-break-inside: avoid;
+}
+
+.pdf-part-header {
+  background: linear-gradient(to right, #3b82f6, #10b981);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.pdf-section {
+  margin-bottom: 28px;
+  page-break-inside: avoid;
+}
+
+.pdf-section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.pdf-section-description {
+  font-size: 14px;
+  color: #64748b;
+  font-style: italic;
+  margin-bottom: 16px;
+}
+
+.pdf-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pdf-field {
+  page-break-inside: avoid;
+}
+
+.pdf-field-label {
+  font-weight: 600;
+  color: #475569;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.pdf-field-value {
+  color: #1e293b;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.pdf-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 4px 0;
+}
+
+.pdf-list li {
+  margin-bottom: 4px;
+}
+
+.pdf-quarter-content {
+  line-height: 1.7;
+}
+
+.pdf-quarterly-overview {
+  margin: 40px 0;
+  page-break-inside: avoid;
+}
+
+.pdf-quarter-box {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  page-break-inside: avoid;
+}
+
+.pdf-support-section {
+  margin: 40px 0;
+  page-break-inside: avoid;
+}
+
+.pdf-circle-card {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  page-break-inside: avoid;
+}
+
+.pdf-closing {
+  margin-top: 48px;
+  page-break-inside: avoid;
+}

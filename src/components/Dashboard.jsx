@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { getProfileSummary } from '../utils/promptPersonalization'
+import { generatePDF } from '../utils/pdfExport'
+import PrintableDashboard from './PrintableDashboard'
 
 export default function Dashboard({ data, sections, onEdit, onStartOver, lifeStageProfile, onRetakeQuestionnaire }) {
   const [exportFormat, setExportFormat] = useState(null)
+  const [pdfStatus, setPdfStatus] = useState('idle') // idle, capturing, generating, downloading, complete, error
+  const printableRef = useRef(null)
 
   const exportAsMarkdown = () => {
     let markdown = '# My Year Plan\n\n'
@@ -105,6 +109,21 @@ export default function Dashboard({ data, sections, onEdit, onStartOver, lifeSta
     navigator.clipboard.writeText(text)
     setExportFormat('clipboard')
     setTimeout(() => setExportFormat(null), 2000)
+  }
+
+  const handlePDFExport = async () => {
+    if (pdfStatus !== 'idle') return
+
+    setPdfStatus('capturing')
+
+    const result = await generatePDF(printableRef.current, {
+      filename: `year-plan-${new Date().getFullYear()}.pdf`,
+      onProgress: setPdfStatus,
+    })
+
+    if (result.success) {
+      setTimeout(() => setPdfStatus('idle'), 2000)
+    }
   }
 
   // Get key data for quick view
@@ -239,6 +258,22 @@ export default function Dashboard({ data, sections, onEdit, onStartOver, lifeSta
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-4 justify-center mb-8">
           <button
+            onClick={handlePDFExport}
+            disabled={pdfStatus !== 'idle'}
+            className={`px-6 py-3 font-medium rounded-lg transition shadow-md hover:shadow-lg ${
+              pdfStatus !== 'idle'
+                ? 'bg-purple-400 cursor-wait text-white'
+                : 'bg-purple-500 hover:bg-purple-600 text-white'
+            }`}
+          >
+            {pdfStatus === 'idle' && 'Download PDF'}
+            {pdfStatus === 'capturing' && 'Capturing...'}
+            {pdfStatus === 'generating' && 'Generating PDF...'}
+            {pdfStatus === 'downloading' && 'Downloading...'}
+            {pdfStatus === 'complete' && 'Downloaded!'}
+            {pdfStatus === 'error' && 'Failed - Try Again'}
+          </button>
+          <button
             onClick={exportAsMarkdown}
             className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition shadow-md hover:shadow-lg"
           >
@@ -347,6 +382,17 @@ export default function Dashboard({ data, sections, onEdit, onStartOver, lifeSta
               )
             })}
           </div>
+        </div>
+      </div>
+
+      {/* Hidden printable version for PDF capture */}
+      <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+        <div ref={printableRef}>
+          <PrintableDashboard
+            data={data}
+            sections={sections}
+            lifeStageProfile={lifeStageProfile}
+          />
         </div>
       </div>
     </div>
