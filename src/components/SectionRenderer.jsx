@@ -1,6 +1,7 @@
 import { TextField, TextareaField, ListField, SelectField, QuarterField } from './Fields'
+import { getPersonalizedDescription, getPersonalizedFieldLabel, getPersonalizedPlaceholder } from '../utils/promptPersonalization'
 
-export default function SectionRenderer({ section, data, onChange }) {
+export default function SectionRenderer({ section, data, onChange, lifeStageProfile }) {
   const sectionData = data[section.id] || {}
 
   const updateField = (fieldId, value) => {
@@ -10,15 +11,29 @@ export default function SectionRenderer({ section, data, onChange }) {
     })
   }
 
+  // Get personalized description for this section
+  const personalizedDescription = getPersonalizedDescription(section.id, lifeStageProfile)
+  const description = personalizedDescription || section.description
+
   const renderField = (field) => {
     const value = sectionData[field.id]
+
+    // Get personalized label and placeholder if available
+    const personalizedLabel = getPersonalizedFieldLabel(section.id, field.id, lifeStageProfile)
+    const personalizedPlaceholder = getPersonalizedPlaceholder(section.id, field.id, lifeStageProfile)
+
+    const enhancedField = {
+      ...field,
+      label: personalizedLabel || field.label,
+      placeholder: personalizedPlaceholder || field.placeholder
+    }
 
     switch (field.type) {
       case 'text':
         return (
           <TextField
             key={field.id}
-            field={field}
+            field={enhancedField}
             value={value}
             onChange={(val) => updateField(field.id, val)}
           />
@@ -28,7 +43,7 @@ export default function SectionRenderer({ section, data, onChange }) {
         return (
           <TextareaField
             key={field.id}
-            field={field}
+            field={enhancedField}
             value={value}
             onChange={(val) => updateField(field.id, val)}
           />
@@ -38,7 +53,7 @@ export default function SectionRenderer({ section, data, onChange }) {
         return (
           <ListField
             key={field.id}
-            field={field}
+            field={enhancedField}
             value={value}
             onChange={(val) => updateField(field.id, val)}
           />
@@ -48,7 +63,7 @@ export default function SectionRenderer({ section, data, onChange }) {
         return (
           <SelectField
             key={field.id}
-            field={field}
+            field={enhancedField}
             value={value}
             onChange={(val) => updateField(field.id, val)}
           />
@@ -58,7 +73,7 @@ export default function SectionRenderer({ section, data, onChange }) {
         return (
           <QuarterField
             key={field.id}
-            field={field}
+            field={enhancedField}
             value={value}
             onChange={(val) => updateField(field.id, val)}
           />
@@ -79,8 +94,13 @@ export default function SectionRenderer({ section, data, onChange }) {
           {section.title}
         </h2>
         <p className="text-slate-600 leading-relaxed">
-          {section.description}
+          {description}
         </p>
+        {personalizedDescription && (
+          <div className="mt-2 text-xs text-blue-600 italic">
+            Personalized for your situation
+          </div>
+        )}
       </div>
 
       <div className="border-t border-slate-200 pt-6">

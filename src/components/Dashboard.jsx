@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { getProfileSummary } from '../utils/promptPersonalization'
 
-export default function Dashboard({ data, sections, onEdit, onStartOver }) {
+export default function Dashboard({ data, sections, onEdit, onStartOver, lifeStageProfile, onRetakeQuestionnaire }) {
   const [exportFormat, setExportFormat] = useState(null)
 
   const exportAsMarkdown = () => {
@@ -113,6 +114,9 @@ export default function Dashboard({ data, sections, onEdit, onStartOver }) {
   const coach = data['your-circle']?.['coach'] || ''
   const challenger = data['your-circle']?.['challenger'] || ''
 
+  // Get profile summary
+  const profileSummary = getProfileSummary(lifeStageProfile)
+
   return (
     <div className="max-w-5xl mx-auto">
       <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
@@ -132,6 +136,66 @@ export default function Dashboard({ data, sections, onEdit, onStartOver }) {
             </div>
             <div className="text-6xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
               {oneWord}
+            </div>
+          </div>
+        )}
+
+        {/* Profile Summary */}
+        {profileSummary && !lifeStageProfile.skipped && (
+          <div className="mb-8 p-6 bg-purple-50 rounded-xl border border-purple-200">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="font-semibold text-purple-900 mb-1">Your Life Stage Profile</h3>
+                <p className="text-sm text-purple-700">This plan was personalized based on your situation</p>
+              </div>
+              <button
+                onClick={onRetakeQuestionnaire}
+                className="px-3 py-1 text-xs bg-purple-200 hover:bg-purple-300 text-purple-900 font-medium rounded transition"
+              >
+                Update Profile
+              </button>
+            </div>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+              {profileSummary.careerStage && (
+                <div>
+                  <span className="font-medium text-purple-800">Career Stage:</span>{' '}
+                  <span className="text-purple-700">{profileSummary.careerStage}</span>
+                </div>
+              )}
+              {profileSummary.familySituation && (
+                <div>
+                  <span className="font-medium text-purple-800">Household:</span>{' '}
+                  <span className="text-purple-700">{profileSummary.familySituation}</span>
+                </div>
+              )}
+              {profileSummary.timeAvailability && (
+                <div>
+                  <span className="font-medium text-purple-800">Time:</span>{' '}
+                  <span className="text-purple-700">{profileSummary.timeAvailability}</span>
+                </div>
+              )}
+              {profileSummary.changeAppetite && (
+                <div>
+                  <span className="font-medium text-purple-800">Change Readiness:</span>{' '}
+                  <span className="text-purple-700">{profileSummary.changeAppetite}</span>
+                </div>
+              )}
+              {profileSummary.planningExperience && (
+                <div>
+                  <span className="font-medium text-purple-800">Planning Experience:</span>{' '}
+                  <span className="text-purple-700">{profileSummary.planningExperience}</span>
+                </div>
+              )}
+              {profileSummary.focusAreas && profileSummary.focusAreas.length > 0 && (
+                <div className="sm:col-span-2 md:col-span-3">
+                  <span className="font-medium text-purple-800">Focus Areas:</span>{' '}
+                  <span className="text-purple-700">
+                    {profileSummary.focusAreas.map(area =>
+                      area.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+                    ).join(', ')}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}

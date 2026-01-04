@@ -5,7 +5,7 @@ import ProgressBar from './ProgressBar'
 import SectionRenderer from './SectionRenderer'
 import Dashboard from './Dashboard'
 
-export default function WizardFlow() {
+export default function WizardFlow({ lifeStageProfile, onRetakeQuestionnaire }) {
   const [currentStep, setCurrentStep] = useState(0)
   const [planData, setPlanData] = useLocalStorage('year-plan-data', {})
   const [showDashboard, setShowDashboard] = useState(false)
@@ -58,6 +58,8 @@ export default function WizardFlow() {
         sections={sections}
         onEdit={handleEditSection}
         onStartOver={handleStartOver}
+        lifeStageProfile={lifeStageProfile}
+        onRetakeQuestionnaire={onRetakeQuestionnaire}
       />
     )
   }
@@ -70,6 +72,7 @@ export default function WizardFlow() {
         section={currentSection}
         data={planData}
         onChange={(data) => updateSectionData(currentSection.id, data)}
+        lifeStageProfile={lifeStageProfile}
       />
 
       <div className="flex justify-between items-center mt-8 max-w-3xl mx-auto">
@@ -97,16 +100,24 @@ export default function WizardFlow() {
         </button>
       </div>
 
-      {currentStep > 0 && (
-        <div className="text-center mt-6">
+      <div className="text-center mt-6 space-y-2">
+        {currentStep > 0 && (
           <button
             onClick={() => setShowDashboard(true)}
-            className="text-sm text-blue-600 hover:text-blue-700 underline"
+            className="text-sm text-blue-600 hover:text-blue-700 underline block mx-auto"
           >
             Jump to dashboard
           </button>
-        </div>
-      )}
+        )}
+        {lifeStageProfile && !lifeStageProfile.skipped && (
+          <button
+            onClick={onRetakeQuestionnaire}
+            className="text-xs text-slate-500 hover:text-slate-700 underline block mx-auto"
+          >
+            Update my profile
+          </button>
+        )}
+      </div>
     </div>
   )
 }

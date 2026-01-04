@@ -1,7 +1,37 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useLocalStorage } from './hooks/useLocalStorage'
+import LifeStageQuestionnaire from './components/LifeStageQuestionnaire'
 import WizardFlow from './components/WizardFlow'
 
 function App() {
+  const [lifeStageProfile, setLifeStageProfile] = useLocalStorage('life-stage-profile', null)
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false)
+
+  useEffect(() => {
+    // Show questionnaire if profile doesn't exist
+    if (!lifeStageProfile) {
+      setShowQuestionnaire(true)
+    }
+  }, [lifeStageProfile])
+
+  const handleQuestionnaireComplete = (profile) => {
+    setLifeStageProfile(profile)
+    setShowQuestionnaire(false)
+  }
+
+  const handleRetakeQuestionnaire = () => {
+    setShowQuestionnaire(true)
+  }
+
+  if (showQuestionnaire) {
+    return (
+      <LifeStageQuestionnaire
+        onComplete={handleQuestionnaireComplete}
+        onSkip={handleQuestionnaireComplete}
+      />
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       <div className="container mx-auto px-4 py-8">
@@ -14,7 +44,10 @@ function App() {
           </p>
         </header>
 
-        <WizardFlow />
+        <WizardFlow
+          lifeStageProfile={lifeStageProfile}
+          onRetakeQuestionnaire={handleRetakeQuestionnaire}
+        />
       </div>
     </div>
   )
